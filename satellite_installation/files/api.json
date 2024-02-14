@@ -1,0 +1,965 @@
+{
+    "links": {
+        "base": {},
+        "api": {},
+        "host_subscriptions": {
+            "List a host's subscriptions": "/api/hosts/:host_id/subscriptions",
+            "Trigger an auto-attach of subscriptions": "/api/hosts/:host_id/subscriptions/auto_attach",
+            "Unregister the host as a subscription consumer": "/api/hosts/:host_id/subscriptions",
+            "Register a host with subscription and information": "/api/hosts/subscriptions",
+            "Add a subscription to a host": "/api/hosts/:host_id/subscriptions/add_subscriptions",
+            "Get content and overrides for the host": "/api/hosts/:host_id/subscriptions/product_content",
+            "Set content overrides for the host": "/api/hosts/:host_id/subscriptions/content_override",
+            "Show releases available for the content host": "/api/hosts/:host_id/subscriptions/available_release_versions",
+            "Show repositories enabled on the host that are known to Katello": "/api/hosts/:host_id/subscriptions/enabled_repositories"
+        },
+        "interfaces": {
+            "List all interfaces for host": "/api/hosts/:host_id/interfaces",
+            "Show an interface for host": "/api/hosts/:host_id/interfaces/:id",
+            "Create an interface on a host": "/api/hosts/:host_id/interfaces",
+            "Update a host's interface": "/api/hosts/:host_id/interfaces/:id",
+            "Delete a host's interface": "/api/hosts/:host_id/interfaces/:id"
+        },
+        "subnets": {
+            "List of subnets": "/api/subnets",
+            "Show a subnet": "/api/subnets/:id",
+            "Create a subnet": "/api/subnets",
+            "Update a subnet": "/api/subnets/:id",
+            "Delete a subnet": "/api/subnets/:id",
+            "Provides an unused IP address in this subnet": "/api/subnets/:id/freeip"
+        },
+        "registration": {
+            "Render Global registration template": "/api/register",
+            "Find or create a host and render the 'Host initial configuration' template": "/api/register"
+        },
+        "registration_commands": {
+            "Generate global registration command": "/api/registration_commands"
+        },
+        "hosts": {
+            "List all hosts": "/api/hosts",
+            "Show a host": "/api/hosts/:id",
+            "Create a host": "/api/hosts",
+            "Update a host": "/api/hosts/:id",
+            "Delete a host": "/api/hosts/:id",
+            "Get ENC values of host": "/api/hosts/:id/enc",
+            "Get status of host": "/api/hosts/:id/status/:type",
+            "Clear sub-status of host": "/api/hosts/:id/status/:type",
+            "Get vm attributes of host": "/api/hosts/:id/vm_compute_attributes",
+            "Disassociate the host from a VM": "/api/hosts/:id/disassociate",
+            "Run a power operation on host": "/api/hosts/:id/power",
+            "Fetch the status of whether the host is powered on or not. Supported hosts are VMs and physical hosts with BMCs": "/api/hosts/:id/power",
+            "Boot host from specified device": "/api/hosts/:id/boot",
+            "Upload facts for a host, creating the host if required": "/api/hosts/facts",
+            "Rebuild orchestration config": "/api/hosts/:id/rebuild_config",
+            "Preview rendered provisioning template content": "/api/hosts/:id/template/:kind",
+            "Get provisioning templates for the host": "/api/hosts/:id/templates",
+            "Get all inherited parameters for a host": "/api/hosts/:id/inherited_parameters",
+            "Runs all Ansible roles on a host": "/api/hosts/:id/play_roles",
+            "Runs all Ansible roles on hosts": "/api/hosts/multiple_play_roles",
+            "List all Ansible roles for a host": "/api/hosts/:id/ansible_roles",
+            "Assigns Ansible roles to a host": "/api/hosts/:id/assign_ansible_roles",
+            "Alter a host's host collections": "/api/hosts/:host_id/host_collections",
+            "Show config information for foreman_scap_client": "/api/hosts/:id/policies_enc"
+        },
+        "hostgroups": {
+            "List all host groups": "/api/hostgroups",
+            "Show a host group": "/api/hostgroups/:id",
+            "Create a host group": "/api/hostgroups",
+            "Update a host group": "/api/hostgroups/:id",
+            "Delete a host group": "/api/hostgroups/:id",
+            "Clone a host group": "/api/hostgroups/:id/clone",
+            "Rebuild orchestration config": "/api/hostgroups/:id/rebuild_config",
+            "Runs all Ansible roles on a hostgroup": "/api/hostgroups/:id/play_roles",
+            "Runs all Ansible roles on hostgroups": "/api/hostgroups/multiple_play_roles",
+            "List all Ansible roles for a hostgroup": "/api/hostgroups/:id/ansible_roles",
+            "Assigns Ansible roles to a hostgroup": "/api/hostgroups/:id/assign_ansible_roles"
+        },
+        "job_templates": {
+            "List job templates": "/api/job_templates",
+            "Import a job template from ERB": "/api/job_templates/import",
+            "Export a job template to ERB": "/api/job_templates/:id/export",
+            "Show job template details": "/api/job_templates/:id",
+            "Create a job template": "/api/job_templates",
+            "Update a job template": "/api/job_templates/:id",
+            "Delete a job template": "/api/job_templates/:id",
+            "Clone a provision template": "/api/job_templates/:id/clone"
+        },
+        "fact_values": {
+            "List all fact values": "/api/fact_values"
+        },
+        "compute_resources": {
+            "List all compute resources": "/api/compute_resources",
+            "Show a compute resource": "/api/compute_resources/:id",
+            "Create a compute resource": "/api/compute_resources",
+            "Update a compute resource": "/api/compute_resources/:id",
+            "Delete a compute resource": "/api/compute_resources/:id",
+            "List available images for a compute resource": "/api/compute_resources/:id/available_images",
+            "List available clusters for a compute resource": "/api/compute_resources/:id/available_clusters",
+            "List available flavors for a compute resource": "/api/compute_resources/:id/available_flavors",
+            "List available folders for a compute resource": "/api/compute_resources/:id/available_folders",
+            "List available zone for a compute resource": "/api/compute_resources/:id/available_zones",
+            "List available networks for a compute resource": "/api/compute_resources/:id/available_networks",
+            "List available vnic profiles for a compute resource, for RHEV only": "/api/compute_resources/:id/available_vnic_profiles",
+            "List resource pools for a compute resource cluster": "/api/compute_resources/:id/available_clusters/:cluster_id/available_resource_pools",
+            "List attributes for a given storage domain": "/api/compute_resources/:id/storage_domains/:storage_domain_id",
+            "List storage domains for a compute resource": "/api/compute_resources/:id/available_storage_domains",
+            "List attributes for a given storage pod": "/api/compute_resources/:id/storage_pods/:storage_pod_id",
+            "List storage pods for a compute resource": "/api/compute_resources/:id/available_storage_pods",
+            "List available security groups for a compute resource": "/api/compute_resources/:id/available_security_groups",
+            "Associate VMs to Hosts": "/api/compute_resources/:id/associate/:vm_id",
+            "Refresh Compute Resource Cache": "/api/compute_resources/:id/refresh_cache",
+            "List available virtual machines for a compute resource": "/api/compute_resources/:id/available_virtual_machines",
+            "Show a virtual machine": "/api/compute_resources/:id/available_virtual_machines/:vm_id",
+            "Power a Virtual Machine": "/api/compute_resources/:id/available_virtual_machines/:vm_id/power",
+            "Delete a Virtual Machine": "/api/compute_resources/:id/available_virtual_machines/:vm_id"
+        },
+        "smart_proxies": {
+            "List all capsules": "/api/smart_proxies",
+            "Show a capsule": "/api/smart_proxies/:id",
+            "Create a capsule": "/api/smart_proxies",
+            "Update a capsule": "/api/smart_proxies/:id",
+            "Delete a capsule": "/api/smart_proxies/:id",
+            "Refresh capsule features": "/api/smart_proxies/:id/refresh",
+            "Import subnets from Capsule": "/api/smart_proxies/:id/import_subnets"
+        },
+        "recurring_logics": {
+            "List recurring logics": "/foreman_tasks/api/recurring_logics",
+            "Show recurring logic details": "/foreman_tasks/api/recurring_logics/:id",
+            "Update recurring logic": "/foreman_tasks/api/recurring_logics/:id",
+            "Cancel recurring logic": "/foreman_tasks/api/recurring_logics/:id/cancel",
+            "Delete recurring logics by search query": "/foreman_tasks/api/recurring_logics/bulk_destroy"
+        },
+        "foreman_tasks": {
+            "Show task summary": "/foreman_tasks/api/tasks/summary",
+            "Show task details": "/foreman_tasks/api/tasks/:id",
+            "Show task extended details": "/foreman_tasks/api/tasks/:id/details",
+            "List dynflow tasks for uuids": "/foreman_tasks/api/tasks/bulk_search",
+            "Resume all paused error tasks": "/foreman_tasks/api/tasks/bulk_resume",
+            "Cancel selected cancellable tasks": "/foreman_tasks/api/tasks/bulk_cancel",
+            "Stop selected stoppable tasks": "/foreman_tasks/api/tasks/bulk_stop",
+            "List tasks": "/foreman_tasks/api/tasks",
+            "Send data to the task from external executor (such as smart_proxy_dynflow)": "/foreman_tasks/api/tasks/callback"
+        },
+        "foreign_input_sets": {
+            "List foreign input sets": "/api/templates/:template_id/foreign_input_sets",
+            "Show foreign input set details": "/api/templates/:template_id/foreign_input_sets/:id",
+            "Create a foreign input set": "/api/templates/:template_id/foreign_input_sets",
+            "Delete a foreign input set": "/api/templates/:template_id/foreign_input_sets/:id",
+            "Update a foreign input set": "/api/templates/:template_id/foreign_input_sets/:id"
+        },
+        "job_invocations": {
+            "List job invocations": "/api/job_invocations",
+            "Show job invocation": "/api/job_invocations/:id",
+            "Create a job invocation": "/api/job_invocations",
+            "Get output for a host": "/api/job_invocations/:id/hosts/:host_id",
+            "Get raw output for a host": "/api/job_invocations/:id/hosts/:host_id/raw",
+            "Cancel job invocation": "/api/job_invocations/:id/cancel",
+            "Rerun job on failed hosts": "/api/job_invocations/:id/rerun",
+            "Get outputs of hosts in a job": "/api/job_invocations/:id/outputs"
+        },
+        "remote_execution_features": {
+            "List remote execution features": "/api/remote_execution_features",
+            "Show remote execution feature": "/api/remote_execution_features/:id",
+            "Update a job template": "/api/remote_execution_features/:id"
+        },
+        "template_invocations": {
+            "List template invocations belonging to job invocation": "/api/job_invocations/:job_invocation_id/template_invocations"
+        },
+        "ansible_inventories": {
+            "Show Ansible inventory for hosts": "/ansible/api/ansible_inventories/hosts",
+            "Show Ansible inventory for hostgroups": "/ansible/api/ansible_inventories/hostgroups",
+            "Schedule generating of Ansible Inventory report": "/ansible/api/ansible_inventories/schedule"
+        },
+        "ansible_override_values": {
+            "Create an override value for a specific ansible variable": "/ansible/api/ansible_override_values",
+            "Destroy an override value": "/ansible/api/ansible_override_values/:id"
+        },
+        "ansible_playbooks": {
+            "Sync Ansible playbooks": "/ansible/api/ansible_playbooks/sync",
+            "Fetch Ansible playbooks available to be synced": "/ansible/api/ansible_playbooks/fetch"
+        },
+        "ansible_roles": {
+            "Show role": "/ansible/api/ansible_roles/:id",
+            "List Ansible roles": "/ansible/api/ansible_roles",
+            "Deletes Ansible role": "/ansible/api/ansible_roles/:id",
+            "DEPRECATED: Import Ansible roles": "/ansible/api/ansible_roles/import",
+            "Sync Ansible roles": "/ansible/api/ansible_roles/sync",
+            "DEPRECATED: Obsolete Ansible roles": "/ansible/api/ansible_roles/obsolete",
+            "Fetch Ansible roles available to be synced": "/ansible/api/ansible_roles/fetch"
+        },
+        "ansible_variables": {
+            "Show variable": "/ansible/api/ansible_variables/:id",
+            "List Ansible variables": "/ansible/api/ansible_variables",
+            "Deletes Ansible variable": "/ansible/api/ansible_variables/:id",
+            "Create Ansible variable": "/ansible/api/ansible_variables",
+            "Updates Ansible variable": "/ansible/api/ansible_variables/:id",
+            "DEPRECATED: Import Ansible variables. This will only import variables for already existing roles, it will not import any new roles": "/ansible/api/ansible_variables/import",
+            "DEPRECATED: Obsolete Ansible variables. This will only obsolete variables for already existing roles, it will not delete any old roles": "/ansible/api/ansible_variables/obsolete"
+        },
+        "disks": {
+            "Boot disks": "/api/bootdisk",
+            "Download generic image": "/api/bootdisk/generic",
+            "Download host image": "/api/bootdisk/hosts/:host_id"
+        },
+        "subnet_disks": {
+            "Subnet boot disks": "/api/bootdisk",
+            "Download subnet generic image": "/api/bootdisk/subnets/:subnet_id"
+        },
+        "templates": {
+            "Initiate Import": "/api/templates/import",
+            "Initiate Export": "/api/templates/export"
+        },
+        "discovered_hosts": {
+            "List all discovered hosts": "/api/v2/discovered_hosts",
+            "Show a discovered host": "/api/v2/discovered_hosts/:id",
+            "Create a discovered host for testing (use /facts to create new hosts)": "/api/v2/discovered_hosts",
+            "Provision a discovered host": "/api/v2/discovered_hosts/:id",
+            "Delete a discovered host": "/api/v2/discovered_hosts/:id",
+            "Upload facts for a host, creating the host if required": "/api/v2/discovered_hosts/facts",
+            "Execute rules against a discovered host": "/api/v2/discovered_hosts/:id/auto_provision",
+            "Execute rules against all currently discovered hosts": "/api/v2/discovered_hosts/auto_provision_all",
+            "Refreshing the facts of a discovered host": "/api/v2/discovered_hosts/:id/refresh_facts",
+            "Rebooting a discovered host": "/api/v2/discovered_hosts/:id/reboot",
+            "Rebooting all discovered hosts": "/api/v2/discovered_hosts/reboot_all"
+        },
+        "discovery_rules": {
+            "List all discovery rules": "/api/v2/discovery_rules",
+            "Show a discovery rule": "/api/v2/discovery_rules/:id",
+            "Create a discovery rule": "/api/v2/discovery_rules",
+            "Update a rule": "/api/v2/discovery_rules/:id",
+            "Delete a rule": "/api/v2/discovery_rules/:id"
+        },
+        "candlepin_dynflow_proxy": {
+            "Update installed packages, enabled repos, module inventory": "/katello/api/consumers/:id/profiles"
+        },
+        "candlepin_proxies": {
+            "Update services requiring restart": "/katello/api/consumers/:id/tracer",
+            "Update the information about enabled repositories": "/katello/api/systems/:id/enabled_repos"
+        },
+        "activation_keys": {
+            "List activation keys": "/katello/api/activation_keys",
+            "Create an activation key": "/katello/api/activation_keys",
+            "Update an activation key": "/katello/api/activation_keys/:id",
+            "Destroy an activation key": "/katello/api/activation_keys/:id",
+            "Show an activation key": "/katello/api/activation_keys/:id",
+            "Copy an activation key": "/katello/api/activation_keys/:id/copy",
+            "List host collections the activation key does not belong to": "/katello/api/activation_keys/:id/host_collections/available",
+            "Show release versions available for an activation key": "/katello/api/activation_keys/:id/releases",
+            "Attach a subscription": "/katello/api/activation_keys/:id/add_subscriptions",
+            "Unattach a subscription": "/katello/api/activation_keys/:id/remove_subscriptions",
+            "Override content for activation_key": "/katello/api/activation_keys/:id/content_override",
+            "Show content available for an activation key": "/katello/api/activation_keys/:id/product_content"
+        },
+        "alternate_content_sources_bulk_actions": {
+            "Destroy one or more alternate content sources": "/katello/api/alternate_content_sources/bulk/destroy",
+            "Refresh alternate content sources": "/katello/api/alternate_content_sources/bulk/refresh"
+        },
+        "alternate_content_sources": {
+            "List alternate content sources": "/katello/api/alternate_content_sources",
+            "Show an alternate content source": "/katello/api/alternate_content_sources/:id",
+            "Create an alternate content source to download content from during repository syncing.  Note: alternate content sources are global and affect ALL sync actions on their capsules regardless of organization": "/katello/api/alternate_content_sources",
+            "Update an alternate content source": "/katello/api/alternate_content_sources/:id",
+            "Destroy an alternate content source": "/katello/api/alternate_content_sources/:id",
+            "Refresh an alternate content source. Refreshing, like repository syncing, is required before using an alternate content source": "/katello/api/alternate_content_sources/:id/refresh"
+        },
+        "ansible_collections": {
+            "List ansible_collections": "/katello/api/ansible_collections",
+            "Show an ansible collection": "/katello/api/ansible_collections/:id",
+            "List :resource": "/katello/api/ansible_collections/compare"
+        },
+        "capsule_content": {
+            "List the lifecycle environments attached to the capsule": "/katello/api/capsules/:id/content/lifecycle_environments",
+            "List the lifecycle environments not attached to the capsule": "/katello/api/capsules/:id/content/available_lifecycle_environments",
+            "Add lifecycle environments to the capsule": "/katello/api/capsules/:id/content/lifecycle_environments",
+            "Remove lifecycle environments from the capsule": "/katello/api/capsules/:id/content/lifecycle_environments/:environment_id",
+            "Synchronize the content to the capsule": "/katello/api/capsules/:id/content/sync",
+            "Get current capsule synchronization status": "/katello/api/capsules/:id/content/sync",
+            "Cancel running capsule synchronization": "/katello/api/capsules/:id/content/sync",
+            "Reclaim space from all On Demand repositories on a capsule": "/katello/api/capsules/:id/reclaim_space"
+        },
+        "capsules": {
+            "List all capsules that have content": "/katello/api/capsules",
+            "Show the capsule details": "/katello/api/capsules/:id"
+        },
+        "content_credentials": {
+            "List Content Credentials": "/katello/api/content_credentials",
+            "Create a Content Credential": "/katello/api/content_credentials",
+            "Show a Content Credential": "/katello/api/content_credentials/:id",
+            "Update a Content Credential": "/katello/api/content_credentials/:id",
+            "Destroy a Content Credential": "/katello/api/content_credentials/:id",
+            "Return the content of a Content Credential, used directly by yum": "/katello/api/content_credentials/:id/content",
+            "Upload Content Credential contents": "/katello/api/content_credentials/:id/content"
+        },
+        "exports": {},
+        "content_export_incrementals": {
+            "Performs an incremental-export of a content view version": "/katello/api/content_export_incrementals/version",
+            "Performs an incremental-export of the repositories in library": "/katello/api/content_export_incrementals/library",
+            "Performs a incremental-export of the repository in library": "/katello/api/content_export_incrementals/repository"
+        },
+        "content_exports": {
+            "List export histories": "/katello/api/content_exports",
+            "Performs a full-export of a content view version": "/katello/api/content_exports/version",
+            "Performs a full-export of the repositories in library": "/katello/api/content_exports/library",
+            "Performs a full-export of the repository in library": "/katello/api/content_exports/repository"
+        },
+        "content_imports": {
+            "List import histories": "/katello/api/content_imports",
+            "Import a content view version": "/katello/api/content_imports/version",
+            "Import a content view version to the library": "/katello/api/content_imports/library",
+            "Import a repository": "/katello/api/content_imports/repository"
+        },
+        "content_uploads": {
+            "Create an upload request": "/katello/api/repositories/:repository_id/content_uploads",
+            "Upload a chunk of the file's content": "/katello/api/repositories/:repository_id/content_uploads/:id",
+            "Delete an upload request": "/katello/api/repositories/:repository_id/content_uploads/:id"
+        },
+        "content_view_components": {
+            "List components attached to this content view": "/katello/api/content_views/:composite_content_view_id/content_view_components",
+            "Add components to the content view": "/katello/api/content_views/:composite_content_view_id/content_view_components/add",
+            "Remove components from the content view": "/katello/api/content_views/:composite_content_view_id/content_view_components/remove",
+            "Show a content view component": "/katello/api/content_views/:composite_content_view_id/content_view_components/:id",
+            "Update a component associated with the content view": "/katello/api/content_views/:composite_content_view_id/content_view_components/:id"
+        },
+        "content_view_filter_rules": {
+            "List filter rules": "/katello/api/content_view_filters/:content_view_filter_id/rules",
+            "Create a filter rule. The parameters included should be based upon the filter type": "/katello/api/content_view_filters/:content_view_filter_id/rules",
+            "Show filter rule info": "/katello/api/content_view_filters/:content_view_filter_id/rules/:id",
+            "Update a filter rule. The parameters included should be based upon the filter type": "/katello/api/content_view_filters/:content_view_filter_id/rules/:id",
+            "Delete a filter rule": "/katello/api/content_view_filters/:content_view_filter_id/rules/:id"
+        },
+        "content_view_filters": {
+            "list filters": "/katello/api/content_views/:content_view_id/filters",
+            "create a filter for a content view": "/katello/api/content_views/:content_view_id/filters",
+            "show filter info": "/katello/api/content_views/:content_view_id/filters/:id",
+            "update a filter": "/katello/api/content_views/:content_view_id/filters/:id",
+            "delete a filter": "/katello/api/content_views/:content_view_id/filters/:id",
+            "bulk delete filter rules": "/katello/api/content_views/:content_view_id/filters/:id/remove_filter_rules",
+            "bulk add filter rules": "/katello/api/content_views/:content_view_id/filters/:id/add_filter_rules"
+        },
+        "content_view_histories": {
+            "Show a content view's history": "/katello/api/content_views/:id/history"
+        },
+        "content_view_versions": {
+            "List content view versions": "/katello/api/content_view_versions",
+            "Show content view version": "/katello/api/content_view_versions/:id",
+            "Promote a content view version": "/katello/api/content_view_versions/:id/promote",
+            "Update a content view version": "/katello/api/content_view_versions/:id",
+            "Forces a republish of the version's repositories' metadata": "/katello/api/content_view_versions/:id/republish_repositories",
+            "Remove content view version": "/katello/api/content_view_versions/:id",
+            "Perform an Incremental Update on one or more Content View Versions": "/katello/api/content_view_versions/incremental_update"
+        },
+        "content_views": {
+            "List content views": "/katello/api/organizations/:organization_id/content_views",
+            "Create a content view": "/katello/api/organizations/:organization_id/content_views",
+            "Update a content view": "/katello/api/content_views/:id",
+            "Publish a content view": "/katello/api/content_views/:id/publish",
+            "Show a content view": "/katello/api/content_views/:id",
+            "Remove a content view from an environment": "/katello/api/content_views/:id/environments/:environment_id",
+            "Remove versions and/or environments from a content view and reassign systems and keys": "/katello/api/content_views/:id/remove",
+            "Bulk remove versions from a content view and reassign systems and keys": "/katello/api/content_views/:id/bulk_delete_versions",
+            "Delete multiple filters from a content view": "/katello/api/content_views/:id/remove_filters",
+            "Delete a content view": "/katello/api/content_views/:id",
+            "Make copy of a content view": "/katello/api/content_views/:id/copy"
+        },
+        "debs": {
+            "List deb packages": "/katello/api/debs/compare",
+            "Show a deb package": "/katello/api/debs/:id"
+        },
+        "docker_manifest_lists": {
+            "List docker_manifest_lists": "/katello/api/docker_manifest_lists/compare",
+            "Show a docker manifest list": "/katello/api/docker_manifest_lists/:id"
+        },
+        "docker_manifests": {
+            "List docker_manifests": "/katello/api/docker_manifests/compare",
+            "Show a docker manifest": "/katello/api/docker_manifests/:id"
+        },
+        "docker_tags": {
+            "List docker_tags": "/katello/api/docker_tags/compare",
+            "Show a docker tag": "/katello/api/docker_tags/:id",
+            "List of repositories for a docker meta tag": "/katello/api/docker_tags/:id/repositories"
+        },
+        "lifecycle_environments": {
+            "List environments in an organization": "/katello/api/environments",
+            "Show an environment": "/katello/api/environments/:id",
+            "Create an environment": "/katello/api/environments",
+            "Update an environment": "/katello/api/environments/:id",
+            "Destroy an environment": "/katello/api/environments/:id",
+            "List environment paths": "/katello/api/organizations/:organization_id/environments/paths"
+        },
+        "errata": {
+            "List errata": "/katello/api/errata/compare",
+            "Show an erratum": "/katello/api/errata/:id"
+        },
+        "file_units": {
+            "List files": "/katello/api/files",
+            "Show a file": "/katello/api/files/:id",
+            "List :resource": "/katello/api/files/compare"
+        },
+        "generic_content_units": {
+            "List content_units": "/katello/api/content_units",
+            "Show a content unit": "/katello/api/content_units/:id",
+            "List :resource": "/katello/api/content_units/compare",
+            "List ostree_refs": "/katello/api/ostree_refs"
+        },
+        "host_autocomplete": {},
+        "host_collections": {
+            "Show a host collection": "/katello/api/host_collections/:id",
+            "List host collections": "/katello/api/host_collections",
+            "Create a host collection": "/katello/api/host_collections",
+            "Update a host collection": "/katello/api/host_collections/:id",
+            "Add host to the host collection": "/katello/api/host_collections/:id/add_hosts",
+            "Remove hosts from the host collection": "/katello/api/host_collections/:id/remove_hosts",
+            "Destroy a host collection": "/katello/api/host_collections/:id",
+            "Make copy of a host collection": "/katello/api/host_collections/:id/copy"
+        },
+        "host_debs": {
+            "List deb packages installed on the host": "/api/hosts/:host_id/debs"
+        },
+        "host_errata": {
+            "List errata available for the content host": "/api/hosts/:host_id/errata",
+            "Schedule errata for installation using katello-agent. NOTE: Katello-agent is deprecated and will be removed in a future release. Consider using remote execution instead": "/api/hosts/:host_id/errata/apply",
+            "Retrieve a single errata for a host": "/api/hosts/:host_id/errata/:id",
+            "Force regenerate applicability": "/api/hosts/:host_id/errata/applicability"
+        },
+        "host_module_streams": {
+            "List module streams available to the host": "/api/hosts/:host_id/module_streams"
+        },
+        "host_packages": {
+            "List packages installed on the host": "/api/hosts/:host_id/packages",
+            "Install packages remotely using katello-agent. NOTE: Katello-agent is deprecated and will be removed in a future release. Consider using remote execution instead": "/api/hosts/:host_id/packages/install",
+            "Update packages remotely using katello-agent. NOTE: Katello-agent is deprecated and will be removed in a future release. Consider using remote execution instead": "/api/hosts/:host_id/packages/upgrade_all",
+            "Uninstall packages remotely using katello-agent. NOTE: Katello-agent is deprecated and will be removed in a future release. Consider using remote execution instead": "/api/hosts/:host_id/packages/remove"
+        },
+        "host_tracer": {
+            "List services that need restarting on the host": "/api/hosts/:host_id/traces",
+            "Resolve traces": "/api/hosts/:host_id/traces/resolve"
+        },
+        "hosts_bulk_actions": {
+            "Add one or more host collections to one or more hosts": "/api/hosts/bulk/add_host_collections",
+            "Remove one or more host collections from one or more hosts": "/api/hosts/bulk/remove_host_collections",
+            "Fetch applicable errata for one or more hosts": "/api/hosts/bulk/applicable_errata",
+            "Fetch installable errata for one or more hosts": "/api/hosts/bulk/installable_errata",
+            "Install content on one or more hosts using katello-agent. NOTE: Katello-agent is deprecated and will be removed in a future release. Consider using remote execution instead": "/api/hosts/bulk/install_content",
+            "Update content on one or more hosts using katello-agent. NOTE: Katello-agent is deprecated and will be removed in a future release. Consider using remote execution instead": "/api/hosts/bulk/update_content",
+            "Remove content on one or more hosts using katello-agent. NOTE: Katello-agent is deprecated and will be removed in a future release. Consider using remote execution instead": "/api/hosts/bulk/remove_content",
+            "Destroy one or more hosts": "/api/hosts/bulk/destroy",
+            "Remove subscriptions from one or more hosts": "/api/hosts/bulk/remove_subscriptions",
+            "Add subscriptions to one or more hosts": "/api/hosts/bulk/add_subscriptions",
+            "Trigger an auto-attach of subscriptions on one or more hosts": "/api/hosts/bulk/auto_attach",
+            "Set content overrides to one or more hosts": "/api/hosts/bulk/content_overrides",
+            "Assign the environment and content view to one or more hosts": "/api/hosts/bulk/environment_content_view",
+            "Assign the release version to one or more hosts": "/api/hosts/bulk/release_version",
+            "Fetch traces for one or more hosts": "/api/hosts/bulk/traces",
+            "Resolve traces for one or more hosts": "/api/hosts/bulk/resolve_traces",
+            "Assign system purpose attributes on one or more hosts": "/api/hosts/bulk/system_purpose",
+            "Given a set of hosts and errata, lists the content view versions and environments that need updating": "/api/hosts/bulk/available_incremental_updates",
+            "Fetch available module streams for hosts": "/api/hosts/bulk/module_streams",
+            "Update the content source for specified hosts and generate the reconfiguration script": "/api/hosts/bulk/change_content_source"
+        },
+        "ping": {
+            "Shows status of Katello system and it's subcomponents": "/katello/api/ping",
+            "Shows version information": "/katello/api/status",
+            "Shows status of Satellite system and it's subcomponents": "/api/ping",
+            "Shows status and version information of Satellite system and it's subcomponents": "/api/statuses"
+        },
+        "module_streams": {
+            "List module_streams": "/katello/api/module_streams/compare",
+            "Show a module stream": "/katello/api/module_streams/:id"
+        },
+        "organizations": {
+            "List all organizations": "/katello/api/organizations",
+            "Show organization": "/katello/api/organizations/:id",
+            "Create organization": "/katello/api/organizations",
+            "Update organization": "/katello/api/organizations/:id",
+            "Delete an organization": "/katello/api/organizations/:id",
+            "Discover Repositories": "/katello/api/organizations/:id/repo_discover",
+            "Cancel repository discovery": "/katello/api/organizations/:label/cancel_repo_discover",
+            "Download a debug certificate": "/katello/api/organizations/:label/download_debug_certificate",
+            "List available releases in the organization": "/katello/api/organizations/:id/releases",
+            "Update the CDN configuration": "/katello/api/organizations/:id/cdn_configuration",
+            "List all :resource_id": "/katello/api/organizations/:id/redhat_provider"
+        },
+        "package_groups": {
+            "List package_groups": "/katello/api/package_groups/compare",
+            "Show a package group": "/katello/api/package_groups/:id",
+            "Create a package group": "/katello/api/package_group",
+            "Delete a package group": "/katello/api/package_group"
+        },
+        "packages": {
+            "List packages": "/katello/api/packages/compare",
+            "Show a package": "/katello/api/packages/:id"
+        },
+        "products_bulk_actions": {
+            "Destroy one or more products": "/katello/api/products/bulk/destroy",
+            "Sync one or more products": "/katello/api/products/bulk/sync_plan",
+            "Verify checksum for one or more products": "/katello/api/products/bulk/verify_checksum",
+            "Update the HTTP Proxy configuration on the repositories of one or more products": "/katello/api/products/bulk/http_proxy"
+        },
+        "products": {
+            "List products": "/katello/api/products",
+            "Create a product": "/katello/api/products",
+            "Show a product": "/katello/api/products/:id",
+            "Updates a product": "/katello/api/products/:id",
+            "Destroy a product": "/katello/api/products/:id",
+            "Sync all repositories for a product": "/katello/api/products/:id/sync"
+        },
+        "repositories_bulk_actions": {
+            "Destroy one or more repositories": "/katello/api/repositories/bulk/destroy",
+            "Synchronize repository": "/katello/api/repositories/bulk/sync",
+            "Reclaim space from On Demand repositories": "/katello/api/repositories/bulk/reclaim_space"
+        },
+        "repositories": {
+            "List of enabled repositories": "/katello/api/repositories",
+            "List :resource": "/katello/api/repositories/compare",
+            "Create a custom repository": "/katello/api/repositories",
+            "Show the available repository types": "/katello/api/repositories/repository_types",
+            "Forces a republish of the specified repository, regenerating metadata and symlinks on the filesystem": "/katello/api/repositories/:id/republish",
+            "Show a repository": "/katello/api/repositories/:id",
+            "Sync a repository": "/katello/api/repositories/:id/sync",
+            "Verify checksum of repository contents": "/katello/api/repositories/:id/verify_checksum",
+            "Reclaim space from an On Demand repository": "/katello/api/repositories/:id/reclaim_space",
+            "Update a repository": "/katello/api/repositories/:id",
+            "Destroy a custom repository": "/katello/api/repositories/:id",
+            "Upload content into the repository": "/katello/api/repositories/:id/upload_content",
+            "Import uploads into a repository": "/katello/api/repositories/:id/import_uploads",
+            "Return the content of a repo gpg key, used directly by yum": "/katello/api/repositories/:id/gpg_key_content",
+            "Return the enabled content types": "/katello/api/content_types"
+        },
+        "repository_sets": {
+            "List repository sets": "/katello/api/repository_sets",
+            "Get info about a repository set": "/katello/api/repository_sets/:id",
+            "Get list of available repositories for the repository set": "/katello/api/repository_sets/:id/available_repositories",
+            "Enable a repository from the set": "/katello/api/repository_sets/:id/enable",
+            "Disable a repository from the set": "/katello/api/repository_sets/:id/disable"
+        },
+        "root": {},
+        "simple_content_access": {
+            "Check if the specified organization is eligible for Simple Content Access": "/katello/api/organizations/:organization_id/simple_content_access/eligible",
+            "Check if the specified organization has Simple Content Access enabled": "/katello/api/organizations/:organization_id/simple_content_access/status",
+            "Enable simple content access for a manifest": "/katello/api/organizations/:organization_id/simple_content_access/enable",
+            "Disable simple content access for a manifest": "/katello/api/organizations/:organization_id/simple_content_access/disable"
+        },
+        "srpms": {
+            "List srpms": "/katello/api/srpms/compare",
+            "Show SRPM details": "/katello/api/srpms/:id"
+        },
+        "subscriptions": {
+            "List organization subscriptions": "/katello/api/organizations/:organization_id/subscriptions",
+            "Show a subscription": "/katello/api/organizations/:organization_id/subscriptions/:id",
+            "Upload a subscription manifest": "/katello/api/organizations/:organization_id/subscriptions/upload",
+            "Refresh previously imported manifest for Red Hat provider": "/katello/api/organizations/:organization_id/subscriptions/refresh_manifest",
+            "Delete manifest from Red Hat provider": "/katello/api/organizations/:organization_id/subscriptions/delete_manifest",
+            "obtain manifest history for subscriptions": "/katello/api/organizations/:organization_id/subscriptions/manifest_history"
+        },
+        "sync": {
+            "Get status of repo synchronisation for given product": "/katello/api/organizations/:organization_id/products/:product_id/sync"
+        },
+        "sync_plans": {
+            "List sync plans": "/katello/api/sync_plans",
+            "Show a sync plan": "/katello/api/organizations/:organization_id/sync_plans/:id",
+            "Create a sync plan": "/katello/api/organizations/:organization_id/sync_plans",
+            "Update a sync plan": "/katello/api/organizations/:organization_id/sync_plans/:id",
+            "Destroy a sync plan": "/katello/api/organizations/:organization_id/sync_plans/:id",
+            "Add products to sync plan": "/katello/api/organizations/:organization_id/sync_plans/:id/add_products",
+            "Remove products from sync plan": "/katello/api/organizations/:organization_id/sync_plans/:id/remove_products",
+            "Initiate a sync of the products attached to the sync plan": "/katello/api/sync_plans/:id/sync"
+        },
+        "upstream_subscriptions": {
+            "List available subscriptions from Red Hat Subscription Management": "/katello/api/organizations/:organization_id/upstream_subscriptions",
+            "Update the quantity of one or more subscriptions on an upstream allocation": "/katello/api/organizations/:organization_id/upstream_subscriptions",
+            "Remove one or more subscriptions from an upstream manifest": "/katello/api/organizations/:organization_id/upstream_subscriptions",
+            "Add subscriptions consumed by a manifest from Red Hat Subscription Management": "/katello/api/organizations/:organization_id/upstream_subscriptions",
+            "Check if a connection can be made to Red Hat Subscription Management": "/katello/api/organizations/:organization_id/upstream_subscriptions/ping"
+        },
+        "configs": {
+            "List of virt-who configurations": "/foreman_virt_who_configure/api/v2/configs",
+            "Show a virt-who configuration": "/foreman_virt_who_configure/api/v2/configs/:id",
+            "Renders a deploy script for the specified virt-who configuration": "/foreman_virt_who_configure/api/v2/configs/:id/deploy_script",
+            "Create a virt-who configuration": "/foreman_virt_who_configure/api/v2/configs",
+            "Update a virt-who configuration": "/foreman_virt_who_configure/api/v2/configs/:id",
+            "Delete a virt-who configuration": "/foreman_virt_who_configure/api/v2/configs/:id"
+        },
+        "preupgrade_reports": {
+            "List Preupgrade reports": "/api/preupgrade_reports",
+            "Show Preupgrade report": "/api/preupgrade_reports/:id",
+            "List Preupgrade reports for Job invocation": "/api/job_invocations/:id/preupgrade_reports"
+        },
+        "arf_reports": {
+            "List ARF reports": "/api/compliance/arf_reports",
+            "Show an ARF report": "/api/compliance/arf_reports/:id",
+            "Delete an ARF Report": "/api/compliance/arf_reports/:id",
+            "Upload an ARF report": "/api/compliance/arf/:cname/:policy_id/:date",
+            "Download bzipped ARF report": "/api/compliance/arf_reports/:id/download",
+            "Download ARF report in HTML": "/api/compliance/arf_reports/:id/download_html"
+        },
+        "oval_contents": {
+            "List OVAL contents": "/api/compliance/oval_contents",
+            "Show an OVAL content": "/api/compliance/oval_contents/:id",
+            "Create OVAL content": "/api/compliance/oval_contents",
+            "Update an OVAL content": "/api/compliance/oval_contents/:id",
+            "Deletes an OVAL content": "/api/compliance/oval_contents/:id",
+            "Sync contents that have remote source URL": "/api/compliance/oval_contents/sync"
+        },
+        "oval_policies": {
+            "List OVAL Policies": "/api/compliance/oval_policies",
+            "Show an OVAL Policy": "/api/compliance/oval_policies/:id",
+            "Create an OVAL Policy": "/api/compliance/oval_policies",
+            "Update an OVAL Policy": "/api/compliance/oval_policies/:id",
+            "Delete an OVAL Policy": "/api/compliance/oval_policies/:id",
+            "Assign hostgroups to an OVAL Policy": "/api/compliance/oval_policies/:id/assign_hostgroups",
+            "Assign hosts to an OVAL Policy": "/api/compliance/oval_policies/:id/assign_hosts",
+            "Show a policy's OVAL content": "/api/compliance/oval_policies/:id/oval_content"
+        },
+        "oval_reports": {
+            "Upload an OVAL report - a list of CVEs for given host": "/api/compliance/oval_reports/:cname/:oval_policy_id/:date"
+        },
+        "policies": {
+            "List Policies": "/api/compliance/policies",
+            "Show a Policy": "/api/compliance/policies/:id",
+            "Create a Policy": "/api/compliance/policies",
+            "Update a Policy": "/api/compliance/policies/:id",
+            "Delete a Policy": "/api/compliance/policies/:id",
+            "Show a policy's SCAP content": "/api/compliance/policies/:id/content",
+            "Show a policy's Tailoring file": "/api/compliance/policies/:id/tailoring"
+        },
+        "scap_content_profiles": {
+            "List SCAP content profiles": "/api/compliance/scap_content_profiles"
+        },
+        "scap_contents": {
+            "List SCAP contents": "/api/compliance/scap_contents",
+            "Download an SCAP content as XML": "/api/compliance/scap_contents/:id/xml",
+            "Show an SCAP content": "/api/compliance/scap_contents/:id",
+            "Create SCAP content": "/api/compliance/scap_contents",
+            "Update an SCAP content": "/api/compliance/scap_contents/:id",
+            "Deletes an SCAP content": "/api/compliance/scap_contents/:id",
+            "Upload scap contents in bulk": "/api/compliance/scap_contents/bulk_upload"
+        },
+        "tailoring_files": {
+            "List Tailoring files": "/api/compliance/tailoring_files",
+            "Download a Tailoring file as XML": "/api/compliance/tailoring_files/:id/xml",
+            "Show a Tailoring file": "/api/compliance/tailoring_files/:id",
+            "Create a Tailoring file": "/api/compliance/tailoring_files",
+            "Update a Tailoring file": "/api/compliance/tailoring_files/:id",
+            "Deletes a Tailoring file": "/api/compliance/tailoring_files/:id"
+        },
+        "inventory": {
+            "Download latest report": "/api/organizations/:organization_id/rh_cloud/report",
+            "Start report generation": "/api/organizations/:organization_id/rh_cloud/report",
+            "Start inventory synchronization": "/api/organizations/:organization_id/rh_cloud/inventory_sync",
+            "Enable cloud connector": "/api/rh_cloud/enable_connector"
+        },
+        "webhook_templates": {
+            "List webhook templates": "/api/webhook_templates",
+            "Show webhook template details": "/api/webhook_templates/:id",
+            "Create a webhook template": "/api/webhook_templates",
+            "Import a webhook template": "/api/webhook_templates/import",
+            "Update a webhook template": "/api/webhook_templates/:id",
+            "Delete a webhook template": "/api/webhook_templates/:id",
+            "Clone a template": "/api/webhook_templates/:id/clone",
+            "Export a webhook template to ERB": "/api/webhook_templates/:id/export"
+        },
+        "webhooks": {
+            "List Webhooks": "/api/webhooks",
+            "Show Webhook details": "/api/webhooks/:id",
+            "Create a Webhook": "/api/webhooks",
+            "Update a Webhook": "/api/webhooks/:id",
+            "Delete a Webhook": "/api/webhooks/:id",
+            "List available events for subscription": "/api/webhooks/events"
+        },
+        "architectures": {
+            "List all architectures": "/api/architectures",
+            "Show an architecture": "/api/architectures/:id",
+            "Create an architecture": "/api/architectures",
+            "Update an architecture": "/api/architectures/:id",
+            "Delete an architecture": "/api/architectures/:id"
+        },
+        "audits": {
+            "List all audits": "/api/audits",
+            "Show an audit": "/api/audits/:id"
+        },
+        "auth_source_externals": {
+            "List external authentication sources": "/api/auth_source_externals",
+            "Show an external authentication source": "/api/auth_source_externals/:id",
+            "Update an external authentication source": "/api/auth_source_externals/:id"
+        },
+        "auth_source_internals": {
+            "List internal authentication sources": "/api/auth_source_internals",
+            "Show an internal authentication source": "/api/auth_source_internals/:id"
+        },
+        "auth_source_ldaps": {
+            "List all LDAP authentication sources": "/api/auth_source_ldaps",
+            "Show an LDAP authentication source": "/api/auth_source_ldaps/:id",
+            "Create an LDAP authentication source": "/api/auth_source_ldaps",
+            "Update an LDAP authentication source": "/api/auth_source_ldaps/:id",
+            "Test LDAP connection": "/api/auth_source_ldaps/:id/test",
+            "Delete an LDAP authentication source": "/api/auth_source_ldaps/:id"
+        },
+        "auth_sources": {
+            "List all authentication sources": "/api/auth_sources"
+        },
+        "autosign": {
+            "List all autosign entries": "/api/smart_proxies/:smart_proxy_id/autosign",
+            "Create autosign entry": "/api/smart_proxies/:smart_proxy_id/autosign",
+            "Delete autosign entry": "/api/smart_proxies/:smart_proxy_id/autosign/:id"
+        },
+        "bookmarks": {
+            "List all bookmarks": "/api/bookmarks",
+            "Show a bookmark": "/api/bookmarks/:id",
+            "Create a bookmark": "/api/bookmarks",
+            "Update a bookmark": "/api/bookmarks/:id",
+            "Delete a bookmark": "/api/bookmarks/:id"
+        },
+        "common_parameters": {
+            "List all global parameters": "/api/common_parameters",
+            "Show a global parameter": "/api/common_parameters/:id",
+            "Create a global parameter": "/api/common_parameters",
+            "Update a global parameter": "/api/common_parameters/:id",
+            "Delete a global parameter": "/api/common_parameters/:id"
+        },
+        "compute_attributes": {
+            "List of compute attributes for provided compute profile and compute resource": "/api/compute_resources/:compute_resource_id/compute_profiles/:compute_profile_id/compute_attributes",
+            "Show a compute attributes set": "/api/compute_resources/:compute_resource_id/compute_profiles/:compute_profile_id/compute_attributes/:id",
+            "Create a compute attributes set": "/api/compute_resources/:compute_resource_id/compute_profiles/:compute_profile_id/compute_attributes",
+            "Update a compute attributes set": "/api/compute_resources/:compute_resource_id/compute_profiles/:compute_profile_id/compute_attributes/:id"
+        },
+        "compute_profiles": {
+            "List of compute profiles": "/api/compute_profiles",
+            "Show a compute profile": "/api/compute_profiles/:id",
+            "Create a compute profile": "/api/compute_profiles",
+            "Update a compute profile": "/api/compute_profiles/:id",
+            "Delete a compute profile": "/api/compute_profiles/:id"
+        },
+        "config_reports": {
+            "List all reports": "/api/config_reports",
+            "Show a report": "/api/config_reports/:id",
+            "Create a report": "/api/config_reports",
+            "Delete a report": "/api/config_reports/:id",
+            "Show the last report for a host": "/api/hosts/:host_id/config_reports/last"
+        },
+        "dashboard": {
+            "Get dashboard details": "/api/dashboard"
+        },
+        "domains": {
+            "List of domains": "/api/domains",
+            "Show a domain": "/api/domains/:id",
+            "Create a domain": "/api/domains",
+            "Update a domain": "/api/domains/:id",
+            "Delete a domain": "/api/domains/:id"
+        },
+        "external_usergroups": {
+            "List all external user groups for user group": "/api/usergroups/:usergroup_id/external_usergroups",
+            "Show an external user group for user group": "/api/usergroups/:usergroup_id/external_usergroups/:id",
+            "Create an external user group linked to a user group": "/api/usergroups/:usergroup_id/external_usergroups",
+            "Update external user group": "/api/usergroups/:usergroup_id/external_usergroups/:id",
+            "Refresh external user group": "/api/usergroups/:usergroup_id/external_usergroups/:id/refresh",
+            "Delete an external user group": "/api/usergroups/:usergroup_id/external_usergroups/:id"
+        },
+        "filters": {
+            "List all filters": "/api/filters",
+            "Show a filter": "/api/filters/:id",
+            "Create a filter": "/api/filters",
+            "Update a filter": "/api/filters/:id",
+            "Delete a filter": "/api/filters/:id"
+        },
+        "home": {
+            "Show available API links": "/api",
+            "Show status": "/api/status"
+        },
+        "host_statuses": {
+            "List of host statuses": "/api/host_statuses"
+        },
+        "http_proxies": {
+            "List of HTTP Proxies": "/api/http_proxies",
+            "Show an HTTP Proxy": "/api/http_proxies/:id",
+            "Create an HTTP Proxy": "/api/http_proxies",
+            "Update an HTTP Proxy": "/api/http_proxies/:id",
+            "Delete an HTTP Proxy": "/api/http_proxies/:id"
+        },
+        "images": {
+            "List all images for a compute resource": "/api/compute_resources/:compute_resource_id/images",
+            "Show an image": "/api/compute_resources/:compute_resource_id/images/:id",
+            "Create an image": "/api/compute_resources/:compute_resource_id/images",
+            "Update an image": "/api/compute_resources/:compute_resource_id/images/:id",
+            "Delete an image": "/api/compute_resources/:compute_resource_id/images/:id"
+        },
+        "instance_hosts": {
+            "Assign a host to the Satellite instance": "/api/instance_hosts/:host_id",
+            "List hosts forming the Satellite instance": "/api/instance_hosts",
+            "Unassign a given host from the Satellite instance": "/api/instance_hosts/:host_id"
+        },
+        "locations": {
+            "List all locations": "/api/locations",
+            "Show a location": "/api/locations/:id",
+            "Create a location": "/api/locations",
+            "Update a location": "/api/locations/:id",
+            "Delete a location": "/api/locations/:id"
+        },
+        "mail_notifications": {
+            "List of email notifications": "/api/mail_notifications",
+            "Show an email notification": "/api/mail_notifications/:id",
+            "Add an email notification for a user": "/api/users/:user_id/mail_notifications",
+            "Update an email notification for a user": "/api/users/:user_id/mail_notifications/:mail_notification_id",
+            "Remove an email notification for a user": "/api/users/:user_id/mail_notifications/:mail_notification_id",
+            "List all email notifications for a user": "/api/users/:user_id/mail_notifications"
+        },
+        "media": {
+            "List all installation media": "/api/media",
+            "Show a medium": "/api/media/:id",
+            "Create a medium": "/api/media",
+            "Update a medium": "/api/media/:id",
+            "Delete a medium": "/api/media/:id"
+        },
+        "models": {
+            "List all hardware models": "/api/models",
+            "Show a hardware model": "/api/models/:id",
+            "Create a hardware model": "/api/models",
+            "Update a hardware model": "/api/models/:id",
+            "Delete a hardware model": "/api/models/:id"
+        },
+        "operatingsystems": {
+            "List all operating systems": "/api/operatingsystems",
+            "Show an operating system": "/api/operatingsystems/:id",
+            "Create an operating system": "/api/operatingsystems",
+            "Update an operating system": "/api/operatingsystems/:id",
+            "Delete an operating system": "/api/operatingsystems/:id",
+            "List boot files for an operating system": "/api/operatingsystems/:id/bootfiles"
+        },
+        "os_default_templates": {
+            "List default templates combinations for an operating system": "/api/operatingsystems/:operatingsystem_id/os_default_templates",
+            "Show a default template combination for an operating system": "/api/operatingsystems/:operatingsystem_id/os_default_templates/:id",
+            "Create a default template combination for an operating system": "/api/operatingsystems/:operatingsystem_id/os_default_templates",
+            "Update a default template combination for an operating system": "/api/operatingsystems/:operatingsystem_id/os_default_templates/:id",
+            "Delete a default template combination for an operating system": "/api/operatingsystems/:operatingsystem_id/os_default_templates/:id"
+        },
+        "parameters": {
+            "List all parameters for a host": "/api/hosts/:host_id/parameters",
+            "Show a nested parameter for a host": "/api/hosts/:host_id/parameters/:id",
+            "Create a nested parameter for a host": "/api/hosts/:host_id/parameters",
+            "Update a nested parameter for a host": "/api/hosts/:host_id/parameters/:id",
+            "Delete a nested parameter for a host": "/api/hosts/:host_id/parameters/:id",
+            "Delete all nested parameters for a host": "/api/hosts/:host_id/parameters"
+        },
+        "permissions": {
+            "List all permissions": "/api/permissions",
+            "Show a permission": "/api/permissions/:id",
+            "List available resource types": "/api/permissions/resource_types"
+        },
+        "personal_access_tokens": {
+            "List all Personal Access Tokens for a user": "/api/users/:user_id/personal_access_tokens",
+            "Show a Personal Access Token for a user": "/api/users/:user_id/personal_access_tokens/:id",
+            "Create a Personal Access Token for a user": "/api/users/:user_id/personal_access_tokens",
+            "Revoke a Personal Access Token for a user": "/api/users/:user_id/personal_access_tokens/:id"
+        },
+        "plugins": {
+            "List installed plugins": "/api/plugins"
+        },
+        "provisioning_templates": {
+            "List provisioning templates": "/api/provisioning_templates",
+            "Show provisioning template details": "/api/provisioning_templates/:id",
+            "Create a provisioning template": "/api/provisioning_templates",
+            "Import a provisioning template": "/api/provisioning_templates/import",
+            "Update a provisioning template": "/api/provisioning_templates/:id",
+            "Delete a provisioning template": "/api/provisioning_templates/:id",
+            "Update the default PXE menu on all configured TFTP servers": "/api/provisioning_templates/build_pxe_default",
+            "Clone a provision template": "/api/provisioning_templates/:id/clone",
+            "Export a provisioning template to ERB": "/api/provisioning_templates/:id/export"
+        },
+        "ptables": {
+            "List all partition tables": "/api/ptables",
+            "Show a partition table": "/api/ptables/:id",
+            "Create a partition table": "/api/ptables",
+            "Import a partition table": "/api/ptables/import",
+            "Update a partition table": "/api/ptables/:id",
+            "Delete a partition table": "/api/ptables/:id",
+            "Clone a template": "/api/ptables/:id/clone",
+            "Export a partition template to ERB": "/api/ptables/:id/export"
+        },
+        "realms": {
+            "List of realms": "/api/realms",
+            "Show a realm": "/api/realms/:id",
+            "Create a realm": "/api/realms",
+            "Update a realm": "/api/realms/:id",
+            "Delete a realm": "/api/realms/:id"
+        },
+        "report_templates": {
+            "List all report templates": "/api/report_templates",
+            "Show a report template": "/api/report_templates/:id",
+            "Create a report template": "/api/report_templates",
+            "Import a report template": "/api/report_templates/import",
+            "Update a report template": "/api/report_templates/:id",
+            "Delete a report template": "/api/report_templates/:id",
+            "Clone a template": "/api/report_templates/:id/clone",
+            "Export a report template to ERB": "/api/report_templates/:id/export",
+            "Generate report from a template": "/api/report_templates/:id/generate",
+            "Schedule generating of a report": "/api/report_templates/:id/schedule_report",
+            "Downloads a generated report": "/api/report_templates/:id/report_data/:job_id"
+        },
+        "roles": {
+            "List all roles": "/api/roles",
+            "Show a role": "/api/roles/:id",
+            "Create a role": "/api/roles",
+            "Update a role": "/api/roles/:id",
+            "Delete a role": "/api/roles/:id",
+            "Clone a role": "/api/roles/:id/clone"
+        },
+        "settings": {
+            "List all settings": "/api/settings",
+            "Show a setting": "/api/settings/:id",
+            "Update a setting": "/api/settings/:id"
+        },
+        "smart_proxy_hosts": {
+            "Assign a host to the capsule": "/api/smart_proxies/:smart_proxy_id/hosts/:host_id",
+            "Get hosts forming the capsule": "/api/smart_proxies/:smart_proxy_id/hosts",
+            "Unassign a given host from the capsule": "/api/smart_proxies/:smart_proxy_id/hosts/:host_id"
+        },
+        "ssh_keys": {
+            "List all SSH keys for a user": "/api/users/:user_id/ssh_keys",
+            "Show an SSH key from a user": "/api/users/:user_id/ssh_keys/:id",
+            "Add an SSH key for a user": "/api/users/:user_id/ssh_keys",
+            "Delete an SSH key for a user": "/api/users/:user_id/ssh_keys/:id"
+        },
+        "table_preferences": {
+            "List of table preferences for a user": "/api/users/:user_id/table_preferences",
+            "Table preference details of a given table": "/api/users/:user_id/table_preferences/:name",
+            "Creates a table preference for a given table": "/api/users/:user_id/table_preferences",
+            "Updates a table preference for a given table": "/api/users/:user_id/table_preferences/:name",
+            "Delete a table preference for a given table": "/api/users/:user_id/table_preferences/:name"
+        },
+        "tasks": {
+            "List all tasks for a given orchestration event": "/api/orchestration/:id/tasks"
+        },
+        "template_combinations": {
+            "List template combination": "/api/provisioning_templates/:provisioning_template_id/template_combinations",
+            "Add a template combination": "/api/provisioning_templates/:provisioning_template_id/template_combinations",
+            "Show template combination": "/api/template_combinations/:id",
+            "Update template combination": "/api/provisioning_templates/:provisioning_template_id/template_combinations/:id",
+            "Delete a template combination": "/api/template_combinations/:id"
+        },
+        "template_inputs": {
+            "List template inputs": "/api/templates/:template_id/template_inputs",
+            "Show template input details": "/api/templates/:template_id/template_inputs/:id",
+            "Create a template input": "/api/templates/:template_id/template_inputs",
+            "Delete a template input": "/api/templates/:template_id/template_inputs/:id",
+            "Update a template input": "/api/templates/:template_id/template_inputs/:id"
+        },
+        "template_kinds": {
+            "List all template kinds": "/api/template_kinds"
+        },
+        "usergroups": {
+            "List all user groups": "/api/usergroups",
+            "Show a user group": "/api/usergroups/:id",
+            "Create a user group": "/api/usergroups",
+            "Update a user group": "/api/usergroups/:id",
+            "Delete a user group": "/api/usergroups/:id"
+        },
+        "users": {
+            "List all users": "/api/users",
+            "Show a user": "/api/users/:id",
+            "Show the currently logged-in user": "/api/current_user",
+            "Create a user": "/api/users",
+            "Update a user": "/api/users/:id",
+            "Delete a user": "/api/users/:id",
+            "Use to authenticate against external authentication source": "/api/users/extlogin"
+        }
+    }
+}

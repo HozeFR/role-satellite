@@ -1,0 +1,25 @@
+---
+- name: Replace /etc/rhsm/rhsm.conf
+  ansible.builtin.replace:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '.*proxy_hostname.*'
+    replace: 'proxy_hostname = {{ proxy_hostname }}'
+
+- name: Replace /etc/rhsm/rhsm.conf
+  ansible.builtin.replace:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '.*proxy_port.*'
+    replace: 'proxy_port = {{ proxy_port }}'
+
+- name: Replace /etc/rhsm/rhsm.conf
+  ansible.builtin.replace:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '.*proxy_user.*'
+    replace: 'proxy_user = {{ proxy_user }}'
+
+- name: Replace /etc/rhsm/rhsm.conf
+  ansible.builtin.replace:
+    path: /etc/rhsm/rhsm.conf
+    regexp: '.*proxy_password.*'
+    replace: 'proxy_password = {{ proxy_password }}'
+...

@@ -1,0 +1,262 @@
+---
+- name: Execute  dnf -y update
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+    update_only: true
+
+- name: Register to access.redhat.com
+  community.general.redhat_subscription:
+    state: present
+    username: "{{ subscription_user }}"
+    password: "{{ subscription_password }}"
+
+- name: Install Chrony
+  ansible.builtin.dnf:
+    name: chrony
+    state: present
+
+- name: Make sure chrony is restarted
+  ansible.builtin.systemd:
+    state: restarted
+    name: chronyd
+
+- name: Execute command to disable repos
+  ansible.builtin.command: subscription-manager repos --disable "*"
+  changed_when: false
+
+- name: Execute command to enable repos
+  ansible.builtin.command: subscription-manager repos \
+    {% for item in satellite_repos %}
+      --enable={{ item }}
+    {% endfor %}
+  changed_when: false
+
+
+- name: Enable postgresql 12
+  ansible.builtin.dnf:
+    name: '@postgresql:12'
+    state: present
+
+- name: Enable ruby 2.7
+  ansible.builtin.dnf:
+    name: '@ruby:2.7'
+    state: present
+    allowerasing: true
+
+- name: Execute command dnf module enable satellite:el8
+  ansible.builtin.command: dnf module enable satellite:el8 -y
+  changed_when: false
+# - name: Install a modularity appstream with defined stream
+#   ansible.builtin.dnf:
+#     name: '@satellite:el8'
+#     state: present
+
+- name: Execute  dnf -y update
+  ansible.builtin.dnf:
+    name: '*'
+    state: latest
+    update_only: true
+
+- name: Execute dnf install satellite -y
+  ansible.builtin.dnf:
+    name: 'satellite'
+    state: present
+
+- name: Execute command satellite-installer
+  ansible.builtin.command: |
+    satellite-installer --scenario satellite \
+    --foreman-initial-organization {{ ORG }} \
+    --foreman-initial-location {{ LOCATION }} \
+    --foreman-initial-admin-username {{ initial_admin }} \
+    --foreman-initial-admin-password {{ initial_passwd }}
+  changed_when: false
+
+- name: Execute foreman-maintain to install sos package
+  ansible.builtin.command: foreman-maintain packages install -y sos
+  changed_when: false
+
+- name: Send manifest to the Satellite
+  ansible.builtin.copy:
+    src: "{{ file_name }}"
+    dest: /tmp
+    mode: '0644'
+  register: manifest_present
+
+- name: List all organization
+  ansible.builtin.uri:
+    url: https://{{ inventory_hostname }}/katello/api/organizations
+    method: GET
+    validate_certs: false
+    force_basic_auth: true
+    user: "{{ initial_admin }}"
+    password: "{{ initial_passwd }}"
+    status_code: 200
+  register: orga_output
+
+- name: Set variable orga_output.json.results.0.id
+  ansible.builtin.set_fact:
+    id_orga: "{{ item.id }}"
+  when: item.name == ORG
+  loop: "{{ orga_output.json.results }}"
+
+- name: Api call to check if the manifest already has been upload
+  ansible.builtin.uri:
+    url: https://{{ inventory_hostname }}/katello/api/organizations/{{ id_orga }}/subscriptions/manifest_history
+    method: GET
+    validate_certs: false
+    force_basic_auth: true
+    user: "{{ initial_admin }}"
+    password: "{{ initial_passwd }}"
+    status_code: 200
+  register: manifest_output
+
+- name: Apply the manifest
+  ansible.builtin.command: |
+    hammer subscription upload \
+    --file /tmp/{{ file_name }} \
+    --organization "{{ ORG }}"
+  changed_when: false
+  register: manifest_upload
+  failed_when:
+    - manifest_upload.stderr_lines | length > 0
+    - ("Import is the same as existing data" not in manifest_upload.stderr_lines | last) and
+    - (manifest_upload.rc != 0)
+
+- name: Delete manifest from remote satellite
+  ansible.builtin.file:
+    path: "/tmp/{{ file_name }}"
+    state: absent
+
+# example of correct name to enable : Red Hat CodeReady Linux Builder for RHEL 8 x86_64 (RPMs)
+- name: Execute command hammer to enable repo
+  ansible.builtin.command: |
+    hammer repository-set enable \
+    --name "{{ item.name }}" \
+    --organization "{{ ORG }}" \
+    --basearch="x86_64" \
+    --releasever "{{ item.version }}"
+  loop: "{{ repo_list }}"
+  changed_when: false
+  register: output_enabled
+
+# the name for repository change for command synchronize change :
+# example of correct name matching the enable example : Red Hat CodeReady Linux Builder for RHEL 8 x86_64 RPMs 8.6
+- name: Execute command hammer to synchronize repo
+  ansible.builtin.command: |
+    hammer repository synchronize \
+    --name "{{ item.name | replace('(', '') | replace(')', '') }} {{ item.version }}"
+    --organization "{{ ORG }}" \
+    --product "{{ item.product }}"
+  loop: "{{ repo_list }}"
+  changed_when: false
+
+- name: Execute command hammer to create content-views
+  ansible.builtin.command: |
+    hammer content-view create
+    --name "{{ item.name }} {{ item.version }}" \
+    --organization "{{ ORG }}"
+  loop: "{{ repo_list }}"
+  register: content_view_output
+  changed_when: false
+  failed_when:
+    - content_view_output.stderr_lines | length > 0
+    - ("Name has already been taken" not in content_view_output.stderr_lines | last) and
+    - (content_view_output.rc != 0)
+
+- name: Execute command hammer to add repo to CV
+  ansible.builtin.command: |
+    hammer content-view add-repository
+    --name "{{ item.name }} {{ item.version }}" \
+    --repository "{{ item.name | replace('(', '') | replace(')', '') }} {{ item.version }}" \
+    --organization "{{ ORG }}"
+  loop: "{{ repo_list }}"
+  changed_when: false
+
+- name: Execute command hammer to create composite content-views
+  ansible.builtin.command: |
+    hammer content-view create --composite
+    --name "{{ ccv_name }}"
+    --organization "{{ ORG }}"
+  changed_when: false
+  register: composite_cv_output
+  failed_when:
+    - composite_cv_output.stderr_lines | length > 0
+    - ("Name has already been taken" not in composite_cv_output.stderr_lines | last)
+    - (composite_cv_output.rc != 0)
+
+# you need to match the --component-content-view name with the upper one
+- name: Execute command hammer to add the CV to CCV
+  ansible.builtin.command: |
+    hammer content-view component add \
+    --component-content-view "{{ item.name }} {{ item.version }}"
+    --latest \
+    --composite-content-view "{{ ccv_name }}" --organization {{ ORG }}
+  loop: "{{ repo_list }}"
+  changed_when: false
+  register: add_cv_to_cvv
+  failed_when:
+    - add_cv_to_cvv.stderr_lines | length > 0
+    - ("Base Another component already includes content view with" not in add_cv_to_cvv.stderr_lines | last)
+    - (add_cv_to_cvv.rc != 0)
+
+- name: Execute command hammer to publish the CV
+  ansible.builtin.command: |
+    hammer content-view publish \
+    --name "{{ item.name }} {{ item.version }}" \
+    --organization {{ ORG }} \
+  loop: "{{ repo_list }}"
+  changed_when: false
+
+- name: Execute command hammer to publish the CCV
+  ansible.builtin.command: |
+    hammer content-view publish \
+    --name "{{ ccv_name }}" \
+    --organization {{ ORG }} \
+  changed_when: false
+
+- name: Create activation key
+  ansible.builtin.command: |
+    hammer activation-key create \
+    --name "AK_{{ ccv_name }}" \
+    --unlimited-hosts \
+    --description "Example Stack in the Development Environment" \
+    --lifecycle-environment "{{ lifecycle_environnement }}" \
+    --content-view "{{ ccv_name }}" \
+    --organization "{{ ORG }}"
+  changed_when: false
+  register: ak_creation
+  failed_when:
+    - ak_creation.stderr_lines | length > 0
+    - ("Name has already been taken" not in ak_creation.stderr_lines | last)
+    - (ak_creation.rc != 0)
+
+- name: Create a sync plan
+  ansible.builtin.command:
+    hammer sync-plan create \
+    --name "{{ SYNC_PLAN }}" \
+    --interval {{ interval }} \
+    --sync-date "{{ sync_date }}" \
+    --enabled true \
+    --organization "{{ ORG }}"
+  changed_when: false
+  register: sync_creation
+  failed_when:
+    - sync_creation.stderr_lines | length > 0
+    - ("Name has already been taken" not in sync_creation.stderr_lines | last)
+    - (sync_creation.rc != 0)
+
+- name: Attach product to sync plan
+  ansible.builtin.command:
+    hammer product set-sync-plan \
+    --name "{{ item }}" \
+    --sync-plan "{{ SYNC_PLAN }}" \
+    --organization "{{ ORG }}"
+  loop: "{{ products }}"
+  changed_when: false
+  register: sync_add
+  failed_when:
+    - sync_add.stderr_lines | length > 0
+    - ("Name has already been taken" not in sync_add.stderr_lines | last)
+    - (sync_add.rc != 0)
+...

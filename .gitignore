@@ -1,0 +1,4 @@
+.vscode
+password.yml
+inventory
+env_vars.yml

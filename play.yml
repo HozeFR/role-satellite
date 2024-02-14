@@ -1,0 +1,51 @@
+---
+- name: Install requirements
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  tags: requirements
+  tasks:
+    - name: Install requirements
+      ansible.builtin.command: "ansible-galaxy install -r collections/requirements.yml"
+      changed_when: false
+
+- name: Both installation
+  hosts: both
+  connection: ssh
+  remote_user: root
+  vars_files:
+    - /home/triotadlere/zmyLocalTests/satellite/firewallport.yml
+    - /home/triotadlere/zmyLocalTests/satellite/env_vars.yml
+  tasks:
+    - name: Set_hostname role
+      ansible.builtin.include_role:
+        name: satellite_installation
+        tasks_from: hostname-config
+
+    - name: Set_hostname role
+      ansible.builtin.include_role:
+        name: satellite_installation
+        tasks_from: firewall-config
+
+- name: Satellite installation
+  hosts: satellite
+  connection: ssh
+  remote_user: root
+  vars:
+    # TODO change path to full path here
+    file_name: manifest_Satellite613auto_2.zip
+  vars_files:
+    # TODO change path to full path here
+    - firewallport.yml
+    - env_vars.yml
+  tasks:
+    # TODO if you want to set up a proxy you can uncomment this
+    # - name: Set_proxy role Satellite
+    #   ansible.builtin.include_role:
+    #     name: satellite_installation
+    #     tasks_from: proxy_config
+
+    - name: Register and install Satellite
+      ansible.builtin.include_role:
+        name: satellite_installation
+        tasks_from: subscription_manager

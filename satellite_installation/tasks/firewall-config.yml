@@ -1,0 +1,13 @@
+---
+- name: Permit traffic in default zone on ports
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: enabled
+  loop: "{{ firewall_port }}"
+
+- name: Reload firewall
+  ansible.builtin.systemd:
+    state: restarted
+    name: firewalld
+...

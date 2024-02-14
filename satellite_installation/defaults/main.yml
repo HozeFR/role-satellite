@@ -1,0 +1,53 @@
+---
+# defaults file for satellite_installation
+SATELLITE: dns_entry
+ORG: orga
+LOCATION: location
+ORGLABEL: orglabel
+REDHAT_TOKEN_LOGIN: numbers|name
+REDHAT_TOKEN_PASS: <Token Password>
+SYNC_PLAN: Daily.Sync.Plan
+interval: daily
+sync_date: "2016-02-01 01:00:00"
+
+initial_admin: initial_admin
+initial_passwd: initial_passwd
+
+dns_ip: X.X.X.X
+
+proxy_hostname: superproxy
+proxy_user: superuser
+proxy_password: superpassword
+proxy_port: proxy_port
+subscription_user: user
+subscription_password: password_vaulted
+
+repo_list:
+  - name: "Red Hat CodeReady Linux Builder for RHEL 8 x86_64 (RPMs)"
+    version: 8.6
+    product: Red Hat CodeReady Linux Builder for x86_64
+  - name: "Red Hat CodeReady Linux Builder for RHEL 9 x86_64 (RPMs)"
+    version: 9.2
+    product: Red Hat CodeReady Linux Builder for x86_64
+  - name: "Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)"
+    version: 8.6
+    product: Red Hat Enterprise Linux for x86_64
+  - name: "Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)"
+    version: 8.6
+    product: Red Hat Enterprise Linux for x86_64
+  - name: "Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)"
+    version: 9.2
+    product: Red Hat Enterprise Linux for x86_64
+  - name: "Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)"
+    version: 9.2
+    product: Red Hat Enterprise Linux for x86_64
+
+
+ccv_name: Global content view
+
+products:
+  - Red Hat CodeReady Linux Builder for x86_64
+  - Red Hat Enterprise Linux for x86_64
+
+lifecycle_environnement: Library
+...
